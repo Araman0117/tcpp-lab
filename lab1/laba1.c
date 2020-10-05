@@ -64,7 +64,8 @@ int scan_text(char *text)
         i++;
     }
 
-    write(1, "\n", 1);
+    printf("\n");
+    // write(1, "\n", 1);
 
     return (sum);
 }
@@ -89,12 +90,14 @@ void show_stat(int sum)
             //тут гистограммы
             while (j < (int)(num * 100 / div))
             {
-                write(1, "*", 1);
+                printf("*");
+                // write(1, "*", 1);
                 j++;
             }
             j = 0;
 
-            write(1, "*\n", 2);
+            printf("*\n");
+            // write(1, "*\n", 2);
         }
         i++;
     }
@@ -110,12 +113,14 @@ void show_stat(int sum)
 
             while (j < (int)(num * 100 / div))
             {
-                write(1, "*", 1);
+                printf("*");
+                // write(1, "*", 1);
                 j++;
             }
             j = 0;
 
-            write(1, "*\n", 2);
+            printf("*\n");
+            // write(1, "*\n", 2);
         }
         i++;
     }
