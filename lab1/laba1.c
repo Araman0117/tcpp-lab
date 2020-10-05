@@ -84,7 +84,7 @@ void show_stat(int sum)
         {
             //тут проценты
             num = (float)((g_array[i] + g_array[i + 32]));
-            printf("'%c' took %f%% of text\t\t", (i + 1), (num * 100 / div));
+            printf("'%c' took %d%% of text\t", (i + 1), (int)(num * 100 / div));
 
             //тут гистограммы
             while (j < (int)(num * 100 / div))
@@ -106,7 +106,7 @@ void show_stat(int sum)
         if ( (g_array[i] > 0) && ( (i < 64) || ((i > 89) && (i < 96)) || (i > 121) ) )
         {
             num = (float)(g_array[i]);
-            printf("'%c' took %f%% of text\t\t", (i + 1), (num * 100 / div));
+            printf("'%c' took %d%% of text\t", (i + 1), (int)(num * 100 / div));
 
             while (j < (int)(num * 100 / div))
             {
