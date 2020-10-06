@@ -6,9 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int g_array[127] = {0};
-
-int scan_out(int i, int j)
+int scan_out(int i, int j, int *symb_list)
 {
     char ch;
     char snum[5];
@@ -19,8 +17,8 @@ int scan_out(int i, int j)
     while (i <= j)
     {
         //если латин алфавит, то учитываем регистр, иначе только сам символ
-        if ((i >= 64) && (i <= 89)) k = (g_array[i] + g_array[i + 32]);
-        else k = g_array[i];
+        if ((i >= 64) && (i <= 89)) k = (symb_list[i] + symb_list[i + 32]);
+        else k = symb_list[i];
 
         //если символ под номером k встретился в тексте хотя бы 1 раз, то
         if (k > 0)
@@ -41,10 +39,11 @@ int scan_out(int i, int j)
     return (res);
 }
 
-int scan_text(char *text)
+int scan_text(char *text, int *symb_list)
 {
     int sum = 0;
     int fd;
+    FILE *fp;
     char *buffer = (char*)malloc(sizeof(char) * (strlen(text) + 1));
     char filename[] = "cache";
 
@@ -54,19 +53,19 @@ int scan_text(char *text)
     close(fd);
 
     //чтение из файла в буфер
-    fd = open(filename, O_RDONLY, S_IRWXU);
-    read(fd, buffer, strlen(text));
+    fp = fopen(filename, "rt");
+    fread(buffer, sizeof(char), strlen(text), fp);
     buffer[strlen(text)] = '\0';
-    close(fd);
+    fclose(fp);
 
-    //отобразить текст
+    // отобразить текст
     // write(1, buffer, strlen(text));
     // write(1, "\n\n", 2);
 
     //сбор статистики символов
     while (*buffer)
     {
-        g_array[*buffer - 1] += 1;
+        symb_list[*buffer - 1] += 1;
         buffer++;
     }
 
@@ -75,14 +74,15 @@ int scan_text(char *text)
     remove(filename);
 
     //вывод первичной статистики (кол-во для каждого символа)
-    sum = scan_out(64, 89) + scan_out(32, 63) + scan_out(90, 95) + scan_out(122, 125);
+    sum =   scan_out(64, 89, symb_list) + scan_out(32, 63, symb_list) + 
+            scan_out(90, 95, symb_list) + scan_out(122, 125, symb_list);
 
     //отделяем вывод первой ф-ии от второй, отправляем результат во вторую ф-ию
     write(1, "\n", 1);
     return (sum);
 }
 
-void stat_out(int i, int j, int sum)
+void stat_out(int i, int j, int sum, int *symb_list)
 {
     int h;
     int k;
@@ -95,8 +95,8 @@ void stat_out(int i, int j, int sum)
     while (i <= j)
     {
         //если латин алфавит, то учитываем регистр, иначе только сам символ
-        if ((i >= 64) && (i <= 89)) k = (g_array[i] + g_array[i + 32]);
-        else k = g_array[i];
+        if ((i >= 64) && (i <= 89)) k = (symb_list[i] + symb_list[i + 32]);
+        else k = symb_list[i];
 
         //если символ под номером k встретился в тексте хотя бы 1 раз, то
         if (k > 0)
@@ -127,19 +127,25 @@ void stat_out(int i, int j, int sum)
     }
 }
 
-void show_stat(int sum)
+void show_stat(int sum, int *symb_list)
 {
     //подсчёт процентов и построение гистограмм для латин алфавита
-    stat_out(64, 89, sum);
+    stat_out(64, 89, sum, symb_list);
     //для всего остального
-    stat_out(32, 63, sum);
-    stat_out(90, 95, sum);
-    stat_out(122, 125, sum);
+    stat_out(32, 63, sum, symb_list);
+    stat_out(90, 95, sum, symb_list);
+    stat_out(122, 125, sum, symb_list);
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc == 2) show_stat(scan_text(argv[1]));
+    int *symb_list = (int*)malloc(sizeof(int) * 127);
+    for (int i = 0; i < 127; i++)
+    {
+        symb_list[i] = 0;
+    }
+    
+    if (argc == 2) show_stat(scan_text(argv[1], symb_list), symb_list);
     //в скан_текст идёт первый параметр в качестве текста для анализа,
     //результат функции идёт в шоу_стат для дальнейшей обработки
     else write(1, "Wrong number of params.\n", 24);
