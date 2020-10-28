@@ -2,11 +2,11 @@ NAME = laba2
 
 FILES = laba2.c source.c headers.h
 
-OPTIONS = -o -c
+OPTIONS = -o
 
 CFLAGS = -Wall -Wextra -Werror
 
-.PHONY: all rm re
+.PHONY: all clean re
 
 all: $(NAME)
 

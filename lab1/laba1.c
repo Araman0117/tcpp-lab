@@ -60,8 +60,8 @@ int scan_text(char *text)
     close(fd);
 
     //отобразить текст
-    // write(1, buffer, strlen(text));
-    // write(1, "\n\n", 2);
+    write(1, buffer, strlen(text));
+    write(1, "\n\n", 2);
 
     //сбор статистики символов
     while (*buffer)
